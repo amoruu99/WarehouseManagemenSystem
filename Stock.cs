@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace WarehouseManagemenSystem
 {
-    internal class Stock
+    internal class Stock // base class for the stock items with their details
     {
         public int MaterialId { get; set; }
         
@@ -16,7 +16,7 @@ namespace WarehouseManagemenSystem
         public double Quantity { get; set; }
     }
 
-    internal class batch
+    internal class batch // adding batches details of the stock items with expiration date and receive date
     {
         public int BatchId { get; set; }
         public int MaterialId { get; set; }
@@ -24,7 +24,7 @@ namespace WarehouseManagemenSystem
         public DateTime ExpiredDate { get; set; }
     }
 
-    internal class StockCard
+    internal class StockCard // giving the details of the stock inbound and outbound transactions
     {
         [Required]
         public int TransactionId { get; set; }

@@ -4,8 +4,12 @@ using System.Text;
 
 namespace WarehouseManagemenSystem
 {
-    internal class Users
+    internal class Users // user class who can access which
     {
+        private Users()
+        {
+            
+        }
 
     }
 }
