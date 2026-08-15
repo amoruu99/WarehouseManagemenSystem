@@ -15,20 +15,24 @@ namespace WarehouseManagemenSystem
         public decimal Quantity { get; set; }
         public List<Batch> Batches { get; set; } = new List<Batch>();
 
-        public void AddBatch(Batch batch)
+        public decimal AddBatch(Batch batch)
         {
-           // adds a new batch to the Stock item
-
+            // adds a new batch to the Stock item
+            // if batch already exists, add the quantity
+            // if different expiration date, create a new batch
+            return 0.0m;
         }
 
-        public void RemoveBatch(Batch batch)
+        public decimal RemoveBatch(Batch batch)
         {
-            // removes a batch from the Stock item return empty not null
+            // removes a batch from the Stock item return empty list not null
+            return 0.0m;
         }
 
-        public void QuantityCheck(Batch batch)
+        public decimal QuantityCheck()
         {
             // sum of all batch Quantity
+            return 0.0m;
         }
     }
 
@@ -40,23 +44,26 @@ namespace WarehouseManagemenSystem
         public DateTime ReceiveDate { get; set; }
         public DateTime ExpiredDate { get; set; }
 
-        public void AddQuantity()
+        public decimal AddQuantity(decimal quantity)
         {
             // quantity must be > 0
             // adds to the batch quantity
             // if quantity < 0 throw rejection exception
+            return 0.0m;
         }
 
-        public void RemoveQuantity()
+        public decimal RemoveQuantity(decimal quantity)
         {
             // quantity must be > 0
             // requested quantity must be <= batch quantity
             // if quantity reach 0, remove batch from the list
+            return 0.0m;
         }
 
-        public void isEmpty()
+        public bool IsEmpty()
         {
             // check if the batch is empty
+            return false;
         }
     }
 
@@ -66,7 +73,6 @@ namespace WarehouseManagemenSystem
         public int TransactionId { get; set; }
         [Required]
         public int MaterialId { get; set; }
-        public int BatchId { get; set; }
         public DateTime TransactionDate { get; set; }
         public string TransactionType { get; set; }
         public decimal Quantity { get; set; }
