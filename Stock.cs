@@ -11,8 +11,9 @@ namespace WarehouseManagemenSystem
         public int MaterialId { get; set; }        
         [Required]
         public string StockName { get; set; }
-        public List<Batch> Batches { get; set; }
         public decimal Quantity { get; set; }
+        public List<Batch> Batches { get; set; }
+
     }
 
     internal class Batch // adding batches details of the stock items with expiration date and receive date
@@ -20,7 +21,7 @@ namespace WarehouseManagemenSystem
         public int BatchId { get; set; }
         public int MaterialId { get; set; }
         public string UnitOfMeasurement { get; set; }
-        public double Quantity { get; set; }
+        public decimal Quantity { get; set; }
         public DateTime ReceiveDate { get; set; }
         public DateTime ExpiredDate { get; set; }
     }
