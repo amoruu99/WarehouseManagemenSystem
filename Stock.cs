@@ -4,6 +4,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Transactions;
+using System.Numerics;
 
 namespace WarehouseManagemenSystem
 {
@@ -18,46 +19,51 @@ namespace WarehouseManagemenSystem
         public decimal Quantity { get; set; }
         public static List<Batch> Batches { get; set; } = new List<Batch>();
 
-        public decimal AddBatch(Batch batch)
+        public void AddBatch(Batch batch)
         {
             // adds a new batch to the Stock item
-            var existingBatch = Batches.Find(b=>b.MaterialId == batch.MaterialId && b.ExpiredDate == batch.ExpiredDate);
-            foreach (var b in Batches)
-            {                
-                if (existingBatch != null) // if batch already exists, add the quantity
-                {
-                    existingBatch.AddQuantity(batch.Quantity);
-                }
-                else
-                {
-                    Batches.Add(batch); // if different expiration date, create a new batch
-                }
+            var existingBatch = Batches.Find(b=>
+            b.MaterialId == batch.MaterialId && 
+            b.ExpiredDate == batch.ExpiredDate
+            );
+
+            if (existingBatch != null)
+            {
+                existingBatch.AddQuantity(batch.Quantity);
             }
-            Batches.Add(batch);
-            return batch.Quantity;
+            else 
+            {
+                Batches.Add(batch);
+            }
         }
 
-        public decimal RemoveBatch(Batch batch)
+        public void RemoveBatch(Batch batch)
         {
             // removes a batch from the Stock item return empty list not null            
-            foreach(var b in Batches)
+            var existingBatch = Batches.Find(b =>
+                b.MaterialId == batch.MaterialId &&
+                b.ExpiredDate == batch.ExpiredDate
+            );
+
+            if (existingBatch != null)
             {
-                if (b.Quantity == 0) // if batch exists
-                {
-                    Batches.Remove(b); // remove the batch from the list
-                }
+                Batches.Remove(existingBatch);
             }
-            return batch.Quantity;
+            else
+            {
+                throw new ArgumentException("Batch is empty");
+            }
         }
 
         public decimal QuantityCheck()
         {
+            decimal total = 0;
             // sum of all batch Quantity
             foreach (var b in Batches)
             {
-                Quantity += b.Quantity;
+                total += b.Quantity;
             }
-            return 0.0m;
+            return total;
         }
     }
 
@@ -68,7 +74,7 @@ namespace WarehouseManagemenSystem
         public DateTime ReceiveDate { get; set; }
         public DateTime ExpiredDate { get; set; }
 
-        public decimal AddQuantity(decimal quantity)
+        public void AddQuantity(decimal quantity)
         {
             // quantity must be > 0
             foreach (var b in Stock.Batches)
@@ -84,10 +90,9 @@ namespace WarehouseManagemenSystem
             }
             // adds to the batch quantity
             // if quantity < 0 throw rejection exception
-            return quantity;
         }
 
-        public decimal RemoveQuantity(decimal quantity)
+        public void RemoveQuantity(decimal quantity)
         {
             // quantity must be > 0            
             foreach (var b in Stock.Batches)
@@ -106,7 +111,6 @@ namespace WarehouseManagemenSystem
             }
             // requested quantity must be <= batch quantity
             // if quantity reach 0, remove batch from the list
-            return quantity;
         }
 
         public bool IsEmpty()
