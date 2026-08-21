@@ -14,19 +14,25 @@ public class Program
         {
             MaterialId = 8002692,
             StockName = "RESKA TEH PREMIUM 12 OZ",
-            UnitOfMeasurement = "PCS",
+            UnitOfMeasurement = "Pcs",
         };
         var stock2 = new Stock()
         {
             MaterialId = 8004691,
             StockName = "INSTANT COFFEE 20 G",
-            UnitOfMeasurement = "PCS",
+            UnitOfMeasurement = "Pcs",
         };
         var stock3 = new Stock()
         {
             MaterialId = 8005012,
             StockName = "MINERAL WATER 600 ML",
-            UnitOfMeasurement = "PCS",
+            UnitOfMeasurement = "Pcs",
+        };
+        var stock4 = new Stock()
+        {
+            MaterialId = 8005005,
+            StockName = "Chitato Lite",
+            UnitOfMeasurement = "Pcs"
         };
         stock1.Batches.Add(new Batch
         {
@@ -63,20 +69,26 @@ public class Program
             MaterialId = 8005012,
             Quantity = 1500,
             ExpiredDate = new DateTime(2028, 9, 25),
-        });      
-
-        stock1.AddBatch(new Batch
-        {
-            MaterialId = 8002692,
-            Quantity = 400,
-            ExpiredDate = new DateTime(2028, 5, 5),
         });
+        /*stock4.Batches.Add(new Batch
+        {
+            MaterialId = 8005005,
+            Quantity = 100,
+            ExpiredDate = new DateTime(2028, 8, 28),
+        });*/
 
-        Console.WriteLine($"{stock1.MaterialId} {stock1.StockName}"); 
-        foreach (var b in stock1.Batches) 
-        { 
-            Console.WriteLine($"{b.ExpiredDate.ToString("dd/MM/yyyy")} = {b.Quantity} {stock1.UnitOfMeasurement.ToString()}"); 
-        }
+
+        stock3.AddBatch(8005012, 250, new DateTime (2028, 10, 25));
+        stock4.AddBatch(8005005, 355, new DateTime(2028, 8, 28));
+        stock4.AddBatch(8005005, 240, new DateTime(2028, 9, 11));
+        stock4.AddBatch(8005005, 225, new DateTime(2028, 5, 15));
+
+        stock1.RemoveBatch(8002692, 400);
+
+        stock1.GenerateReport();
+        stock2.GenerateReport();
+        stock3.GenerateReport();
+        stock4.GenerateReport();
 
     }
 }

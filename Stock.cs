@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Transactions;
 using System.Numerics;
-using Microsoft.VisualBasic;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Transactions;
 
 namespace WarehouseManagemenSystem
 {
@@ -15,39 +16,56 @@ namespace WarehouseManagemenSystem
         [Key]
         public int MaterialId { get; set; }        
         [Required]
-        public string StockName { get; set; }
-        public string UnitOfMeasurement { get; set; }
+        public string? StockName { get; set; }
+        public string? UnitOfMeasurement { get; set; }
         public List<Batch> Batches { get; set; } = new List<Batch>();
 
-        public void AddBatch(Batch batch)
+        public void AddBatch(int MaterialId,int quantity, DateTime ExpiredDate)
         {
             // adds a new batch to the Stock item
-            var existingBatch = Batches.Find(b=>
-            b.MaterialId == batch.MaterialId && 
-            b.ExpiredDate == batch.ExpiredDate
+            var existingBatch = Batches.Find(b =>
+            b.MaterialId == MaterialId && 
+            b.ExpiredDate == ExpiredDate
             );
 
             if (existingBatch != null)
             {
-                existingBatch.AddQuantity(batch.Quantity);
+                existingBatch.AddQuantity(quantity);
             }
-            else 
+            else
             {
-                Batches.Add(batch);
+                Batches.Add(new Batch
+                {
+                    MaterialId = MaterialId,
+                    Quantity = quantity,
+                    ExpiredDate = ExpiredDate,
+                });
+                Batches.Sort((a, b) => a.ExpiredDate.CompareTo(b.ExpiredDate));
             }
         }
 
-        public void RemoveBatch(Batch batch)
+        public void RemoveBatch(int MaterialId, decimal quantity)
         {
-            // removes a batch from the Stock item return empty list not null            
+            // removes a batch from the Stock item return empty list not null
             var existingBatch = Batches.Find(b =>
-                b.MaterialId == batch.MaterialId &&
-                b.ExpiredDate == batch.ExpiredDate
+            b.MaterialId == MaterialId 
             );
-
+            var remaining = quantity;            
             if (existingBatch != null)
-            {
-                existingBatch.RemoveQuantity(batch.Quantity);
+            {                
+                foreach (var batch in Batches)
+                {                    
+                    if (batch.MaterialId == MaterialId)
+                    {
+                        var amountRequested = Math.Min(remaining, batch.Quantity);
+                        batch.RemoveQuantity(amountRequested);
+                        remaining -= amountRequested;
+                        if (remaining == 0)
+                        {
+                            break;
+                        }
+                    }
+                }                
             }
             else
             {
@@ -70,9 +88,10 @@ namespace WarehouseManagemenSystem
         {
             Console.WriteLine($"{MaterialId}\t{StockName}");
             foreach (Batch b in Batches)
-            {
+            {                
                 Console.WriteLine($"{b.ExpiredDate:dd/MM/yyyy} = {b.Quantity} {UnitOfMeasurement}");
             }
+            Console.WriteLine($"Total: {QuantityCheck()} {UnitOfMeasurement}\n");
         }
     }
 
@@ -110,7 +129,7 @@ namespace WarehouseManagemenSystem
             {
                 throw new ArgumentException("Insufficient Stock");
             }
-            // requested quantity must be <= batch quantity
+            // requested quantity must be <= batch quantity 
             
             // if quantity reach 0, remove batch from the list
         }
@@ -120,7 +139,7 @@ namespace WarehouseManagemenSystem
             // check if the batch is empty
             if (Quantity == 0)
             {                
-                return true;
+                return true;                
             }
             return false;
         }
@@ -134,9 +153,9 @@ namespace WarehouseManagemenSystem
         public int TransactionId { get; set; }
         [Required]
         public int MaterialId { get; set; }
-        public string StockName { get; set; }
+        public string? StockName { get; set; }
         public DateTime TransactionDate { get; set; }
-        public string TransactionType { get; set; }
+        public string? TransactionType { get; set; }
         public decimal Quantity { get; set; }
         public string? PicName { get; set; }
         public string? References{ get; set; }
