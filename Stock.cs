@@ -17,8 +17,9 @@ namespace WarehouseManagemenSystem
         public int MaterialId { get; set; }        
         [Required]
         public string? StockName { get; set; }
-        public string? UnitOfMeasurement { get; set; }
+        public string? UnitOfMeasurement { get; set; }        
         public List<Batch> Batches { get; set; } = new List<Batch>();
+        internal StockCard stockCard { get; set; } = new StockCard();
 
         public void AddBatch(int MaterialId,int quantity, DateTime ExpiredDate)
         {
@@ -30,7 +31,7 @@ namespace WarehouseManagemenSystem
 
             if (existingBatch != null)
             {
-                existingBatch.AddQuantity(quantity);
+                existingBatch.AddQuantity(quantity);                
             }
             else
             {
@@ -40,8 +41,9 @@ namespace WarehouseManagemenSystem
                     Quantity = quantity,
                     ExpiredDate = ExpiredDate,
                 });
-                Batches.Sort((a, b) => a.ExpiredDate.CompareTo(b.ExpiredDate));
-            }
+                Batches.Sort((a, b) => a.ExpiredDate.CompareTo(b.ExpiredDate));                
+            }            
+            /*stockCard.InBound(quantity, MaterialId);*/
         }
 
         public void RemoveBatch(int MaterialId, decimal quantity)
@@ -65,7 +67,8 @@ namespace WarehouseManagemenSystem
                             break;
                         }
                     }
-                }                
+                }
+                /*stockCard.OutBound(quantity, MaterialId);*/
             }
             else
             {
@@ -91,7 +94,7 @@ namespace WarehouseManagemenSystem
             {                
                 Console.WriteLine($"{b.ExpiredDate:dd/MM/yyyy} = {b.Quantity} {UnitOfMeasurement}");
             }
-            Console.WriteLine($"Total: {QuantityCheck()} {UnitOfMeasurement}\n");
+            Console.WriteLine($"Total: {QuantityCheck()} {UnitOfMeasurement}\n");            
         }
     }
 
@@ -143,8 +146,6 @@ namespace WarehouseManagemenSystem
             }
             return false;
         }
-
-
     }
 
     internal class StockCard // giving the details of the stock inbound and outbound transactions
@@ -160,11 +161,16 @@ namespace WarehouseManagemenSystem
         public string? PicName { get; set; }
         public string? References{ get; set; }
 
-        public string TransactionInfo()
+        public void InBound(decimal quantity, int MaterialId)
         {
-            return $"Date: {TransactionDate}\tType: {TransactionType}\tMaterial ID: {MaterialId}\tMaterial Description: {StockName}\tQuantity: {Quantity}\t";
+            TransactionDate = DateTime.Today;
+            Console.WriteLine($"{TransactionDate:dd/MM}\n\t{MaterialId} IN {quantity}");            
         }
 
-        
+        public void OutBound(decimal quantity, int MaterialId)
+        {
+            TransactionDate = DateTime.Today;
+            Console.WriteLine($"{TransactionDate:dd/MM}\n\t{MaterialId} OUT {quantity}");
+        }
     }
 }

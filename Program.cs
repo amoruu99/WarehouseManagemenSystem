@@ -82,7 +82,6 @@ public class Program
         stock4.AddBatch(8005005, 355, new DateTime(2028, 8, 28));
         stock4.AddBatch(8005005, 240, new DateTime(2028, 9, 11));
         stock4.AddBatch(8005005, 225, new DateTime(2028, 5, 15));
-
         stock1.RemoveBatch(8002692, 400);
 
         stock1.GenerateReport();
