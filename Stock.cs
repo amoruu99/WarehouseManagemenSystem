@@ -19,9 +19,50 @@ namespace WarehouseManagemenSystem
         public string? StockName { get; set; }
         public string? UnitOfMeasurement { get; set; }        
         public List<Batch> Batches { get; set; } = new List<Batch>();
-        internal StockCard stockCard { get; set; } = new StockCard();
+        public List<StockCard> stockCard { get; set; } = new List<StockCard>();
 
-        public void AddBatch(int MaterialId,int quantity, DateTime ExpiredDate)
+        public void Inbound(decimal quantity, DateTime expiredDate)
+        {            
+            DateTime transactionDate = DateTime.Today;
+            if (quantity > 0.0m)
+            {
+                AddBatch(MaterialId, quantity, expiredDate);
+                stockCard.Add(new StockCard
+                {
+                    MaterialId = MaterialId,
+                    StockName = StockName,
+                    Quantity = quantity,
+                    TransactionType = "IN",
+                    TransactionDate = transactionDate
+                });
+            }
+            else
+            {
+                throw new ArgumentException("Cannot be less than or equal 0");
+            }
+        }
+
+        public void OutBound(decimal quantity)
+        {
+            DateTime transactionDate = DateTime.Today;
+            if (quantity > 0)
+            {
+                RemoveBatch(MaterialId, quantity);
+                stockCard.Add(new StockCard
+                {
+                    MaterialId = MaterialId,
+                    StockName = StockName,
+                    Quantity = quantity,
+                    TransactionType = "OUT",
+                    TransactionDate = transactionDate
+                });
+            }
+            else
+            {
+                throw new ArgumentException("Cannot be less than or equal 0");
+            }
+        }
+        public void AddBatch(int MaterialId,decimal quantity, DateTime ExpiredDate)
         {
             // adds a new batch to the Stock item
             var existingBatch = Batches.Find(b =>
@@ -41,9 +82,9 @@ namespace WarehouseManagemenSystem
                     Quantity = quantity,
                     ExpiredDate = ExpiredDate,
                 });
-                Batches.Sort((a, b) => a.ExpiredDate.CompareTo(b.ExpiredDate));                
-            }            
-            /*stockCard.InBound(quantity, MaterialId);*/
+                Batches.Sort((a, b) => a.ExpiredDate.CompareTo(b.ExpiredDate));
+            }
+            
         }
 
         public void RemoveBatch(int MaterialId, decimal quantity)
@@ -68,7 +109,6 @@ namespace WarehouseManagemenSystem
                         }
                     }
                 }
-                /*stockCard.OutBound(quantity, MaterialId);*/
             }
             else
             {
@@ -94,7 +134,13 @@ namespace WarehouseManagemenSystem
             {                
                 Console.WriteLine($"{b.ExpiredDate:dd/MM/yyyy} = {b.Quantity} {UnitOfMeasurement}");
             }
-            Console.WriteLine($"Total: {QuantityCheck()} {UnitOfMeasurement}\n");            
+            Console.WriteLine($"Total: {QuantityCheck()} {UnitOfMeasurement}");
+
+            foreach (StockCard s in stockCard)
+            {
+                Console.WriteLine($"{s.TransactionDate:dd/MM}\t{s.TransactionType}\t{s.Quantity}");                
+            }
+            Console.WriteLine();
         }
     }
 
@@ -114,7 +160,7 @@ namespace WarehouseManagemenSystem
             }
             else
             {
-                throw new ArgumentException("Add Quantity must be positive");
+                throw new ArgumentException("Add Quantity cannot be less than or equal 0");
             }
             // adds to the batch quantity
             
@@ -161,16 +207,6 @@ namespace WarehouseManagemenSystem
         public string? PicName { get; set; }
         public string? References{ get; set; }
 
-        public void InBound(decimal quantity, int MaterialId)
-        {
-            TransactionDate = DateTime.Today;
-            Console.WriteLine($"{TransactionDate:dd/MM}\n\t{MaterialId} IN {quantity}");            
-        }
-
-        public void OutBound(decimal quantity, int MaterialId)
-        {
-            TransactionDate = DateTime.Today;
-            Console.WriteLine($"{TransactionDate:dd/MM}\n\t{MaterialId} OUT {quantity}");
-        }
+        
     }
 }

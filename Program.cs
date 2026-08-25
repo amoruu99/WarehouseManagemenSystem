@@ -78,11 +78,12 @@ public class Program
         });*/
 
 
-        stock3.AddBatch(8005012, 250, new DateTime (2028, 10, 25));
-        stock4.AddBatch(8005005, 355, new DateTime(2028, 8, 28));
-        stock4.AddBatch(8005005, 240, new DateTime(2028, 9, 11));
-        stock4.AddBatch(8005005, 225, new DateTime(2028, 5, 15));
-        stock1.RemoveBatch(8002692, 400);
+        stock3.Inbound(250, new DateTime (2028, 10, 25));
+        stock4.Inbound(355, new DateTime(2028, 8, 28));
+        stock4.Inbound(240, new DateTime(2028, 9, 11));
+        stock4.Inbound(225, new DateTime(2028, 5, 15));
+        stock1.OutBound(400);
+        stock1.OutBound(0);
 
         stock1.GenerateReport();
         stock2.GenerateReport();
